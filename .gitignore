@@ -1,0 +1,21 @@
+## build output
+target/
+
+## eclipse files
+.project
+.classpath
+.settings/
+
+
+src/resources/loginInfo.json
+conf/
+desc/
+dict/
+map/
+spec/
+
+DescribeMetadata.xml
+package*.xml
+*.log
+
+*old.*

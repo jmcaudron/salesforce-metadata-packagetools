@@ -20,13 +20,32 @@ Configuration files :
             "apiVersion":"38.0",
             "url":"https://test.salesforce.com/services/Soap/u/38.0"
          } 
-     metadataInfo.json : this file contains informaiton about metadata you need extract in package.xml
-         queries= list of component you need to extract,
-         fromDate = Reference date. All metadata component change since this date are extracted in package.xml
+     metadataInfo.json : this file contains information about metadata you need extract in package.xml :
+        queries= list of component you need to extract,
+            [
+                {"type":"CustomField"},
+                {"type":"CustomLabel"},
+                {"type":"CustomObject"},
+                {"type":"WorkflowRule"},
+                {"folder":"*","type":"Report"},
+                {"folder":"*","type":"Dashboard"}
+            ]
+         fromDate = Reference date. All metadata components change since this date are extracted in package.xml
          version = Salesforce API version 
 
-To run Metadata tool from the command line, use the command:
+To run Metadata tool from the command line, use the command from target folder:
 
-    mvn exec:java -Dexec.mainClass=com.jmc.force.metadata.buildMetadata
+    java -jar salesforceMetadata-0.1.1-shade.jar
+
+    mvn exec:java -Dexec.mainClass=com.jmc.force.metadata.BuildPackage
+    
+    
+    java -jar target/salesforceMetadata-0.1.1-shade.jar 
+    
+    java -cp salesforceMetadata-0.1.1-shade.jar com.jmc.force.metadata.BuildPackage
+    
+To build Data Dictionary : 
+    
+    java -cp salesforceMetadata-0.1.1-shade.jar com.jmc.force.metadata.BuildSpecFile
 
 

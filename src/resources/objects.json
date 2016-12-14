@@ -1,0 +1,6 @@
+{
+    "listObjects": [
+                    {"name":"Contact","externalId":"ExternalId__c"},
+                    {"name":"Account","externalId":"ExternalId__c"}
+    ]
+}

@@ -1,0 +1,8 @@
+{
+    "username":"yourUsername",
+    "password":"yourPassword",
+    "token":"yourSecurotyToken",
+    "apiVersion":"38.0",
+    "apiService":"data/v",
+    "url":"https://login.salesforce.com/services/Soap/u/38.0"
+}
