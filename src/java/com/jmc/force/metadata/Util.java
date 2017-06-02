@@ -41,7 +41,7 @@ public class Util {
 		    			break;		
 		    		}
 		    		
-		    		if (memberDate.after(refDate)) {
+		    		if (memberDate.after(refDate) && n.getManageableState() == com.sforce.soap.metadata.ManageableState.unmanaged) {
 		    			members.add(n.getFullName());
 		    		}
 		    	}

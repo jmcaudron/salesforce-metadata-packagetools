@@ -60,6 +60,7 @@ public class BuildSpecFile {
     
     
     private void run() throws Exception {
+    	String outputDirectory;
     	JSONObject json;
 		//JSONObject record;
 		JSONArray records;
@@ -79,7 +80,10 @@ public class BuildSpecFile {
     	loginUtil lu = new loginUtil();
      	metadataConnection =  lu.getMetadataConnection("");
      	APIVersion = lu.getAPIVersion();
-     	
+    	outputDirectory=lu.getOutputDirectory();
+    	logger.info("outputDirectory"+outputDirectory);
+
+    	
      	List<Row> rowsObject;
      	//Row rowObject =new Row();
        	List<String> headerObjects=  Arrays.asList("label","name","keyPrefix","custom","createable","updateable","deletable","undeletable","mergeable","searchable","queryable","replicateable","activateable","deprecatedAndHidden","layoutable","feedEnabled","retrieveable","hasSubtypes","mruEnabled","customSetting","labelPlural","triggerable") ;
@@ -122,15 +126,15 @@ public class BuildSpecFile {
      	CSVFileWriter filePicklists;
         
 
-     	folder = new File("map/");
+     	folder = new File(outputDirectory+"map/");
      	folder.mkdirs();     	
-     	folder = new File("desc/");
+     	folder = new File(outputDirectory+"desc/");
      	folder.mkdirs();
-     	folder = new File("spec/");
+     	folder = new File(outputDirectory+"spec/");
      	folder.mkdirs();	
-     	folder = new File("conf/");
-     	folder.mkdirs();   
-     	folder = new File("dict/");
+     	//folder = new File(outputDirectory+"conf/");
+     	//folder.mkdirs();   
+     	folder = new File(outputDirectory+"dict/");
      	folder.mkdirs();   
      	
     	//Boolean isExternalId ;
@@ -140,23 +144,23 @@ public class BuildSpecFile {
     	//rowsField= new ArrayList<Row>();
       	//rowsDictionary= new ArrayList<Row>();
 
-    	fileObjects = new CSVFileWriter("dict/Objects.csv");
+    	fileObjects = new CSVFileWriter(outputDirectory+"dict/Objects.csv");
     	fileObjects.open();
     	fileObjects.setColumnNames(new ArrayList<String>(headerObjects));
     	
-    	fileDictionary = new CSVFileWriter("dict/Fields.csv");
+    	fileDictionary = new CSVFileWriter(outputDirectory+"dict/Fields.csv");
     	fileDictionary.open();
     	fileDictionary.setColumnNames(new ArrayList<String>(headerDictionary));
 
-    	fileExternalId = new CSVFileWriter("dict/ExternalId.csv");
+    	fileExternalId = new CSVFileWriter(outputDirectory+"dict/ExternalId.csv");
     	fileExternalId.open();
     	fileExternalId.setColumnNames(new ArrayList<String>(headerExternalId));
     	
-    	fileQueries =new CSVFileWriter("dict/queries.csv" );
+    	fileQueries =new CSVFileWriter(outputDirectory+"dict/queries.csv" );
     	fileQueries.open();
     	fileQueries.setColumnNames(new ArrayList<String>(headerQueries));
     	
-    	filePicklists =new CSVFileWriter("dict/picklist.csv" );
+    	filePicklists =new CSVFileWriter(outputDirectory+"dict/picklist.csv" );
     	filePicklists.open();
     	filePicklists.setColumnNames(new ArrayList<String>(headerPicklist));
     	
@@ -296,21 +300,21 @@ public class BuildSpecFile {
 				filePicklists.writeRowList(rowsPicklist);
 				//logger.error("picklist<"+object+">=" +rowsPicklist.toString());
 				
-				fileFields =new CSVFileWriter("desc/"+sObject.get("name")+".csv" );
+				fileFields =new CSVFileWriter(outputDirectory+"desc/"+sObject.get("name")+".csv" );
 				fileFields.open();
 				fileFields.setColumnNames(new ArrayList<String>(headerField));
 				fileFields.writeRowList(rowsField);
 				//System.err.println(rowsField.toString());
 				fileFields.close();
 				
-				fileMap =new CSVFileWriter("map/"+sObject.get("name")+".sdl" );
+				fileMap =new CSVFileWriter(outputDirectory+"map/"+sObject.get("name")+".sdl" );
 				fileMap.open();
 				fileMap.setColumnNames(new ArrayList<String>(headerMap));
 				fileMap.writeRowList(rowsMap);
 				//System.err.println(rowsMap.toString());
 				fileMap.close();
 				
-				fileSpec =new CSVFileWriter("spec/"+sObject.get("name")+".csv" );
+				fileSpec =new CSVFileWriter(outputDirectory+"spec/"+sObject.get("name")+".csv" );
 				fileSpec.open();
 				fileSpec.setColumnNames(new ArrayList<String>(headerSpec));
 				fileSpec.writeRowList(rowsSpec);

@@ -111,12 +111,14 @@ public class BuildPackage {
     
     private void run(String envFile) throws Exception {
     	File folder;
+    	String outputDirectory;
     	
     	logger.info("Start");
     	loginUtil lu = new loginUtil();
 	
      	metadataConnection =  lu.getMetadataConnection(envFile);
 
+     	outputDirectory=lu.getOutputDirectory();  
     	sessionId = metadataConnection.getConfig().getSessionId();
     	uri=metadataConnection.getConfig().getRestEndpoint();
 
@@ -125,7 +127,7 @@ public class BuildPackage {
 
     	logger.debug("username="+metadataConnection.getConfig().getUsername());
     	logger.info("sessionId="+sessionId);
-    	folder = new File("package/");
+    	folder = new File(outputDirectory+"/package/");
      	folder.mkdirs();     	
     	
     	DescribeMetadataResult metadataresult = metadataConnection.describeMetadata((Double.valueOf(lu.getAPIVersion())));
@@ -144,9 +146,9 @@ public class BuildPackage {
     	metadatadescribexout.close();
     	metadatadescribefos.close();
     	
-    	writeMetadata("package/package.xml",packageType.Updated);
-    	writeMetadata("package/packageAll.xml",packageType.All); 
-    	writeMetadata("package/packageNew.xml",packageType.New);            
+    	writeMetadata(outputDirectory+"/package/package.xml",packageType.Updated);
+    	writeMetadata(outputDirectory+"/package/packageAll.xml",packageType.All); 
+    	writeMetadata(outputDirectory+"/package/packageNew.xml",packageType.New);            
         logger.info("End");
     }
     

@@ -32,20 +32,22 @@ public class loginUtil {
     	public String apiVersion;
     	public String apiService;
     	public String url;
+    	public String directory;
     
     	public loginInfo() {
     		super();
-    		username=password=apiVersion=url=apiService=token="";
+    		username=password=apiVersion=url=apiService=token=directory="";
     	}
     	
     	
-    	public loginInfo (String userame, String password,String token, String apiversion,String apiservice, String url) {
+    	public loginInfo (String userame, String password,String token, String apiversion,String apiservice, String url,String directory) {
     		this.username = userame;
     		this.apiVersion = apiversion;
     		this.apiService = apiservice;
     		this.password = password;
     		this.token = token;
     		this.url = url;
+    		this.directory =  directory;
     	}
     }
     
@@ -106,6 +108,10 @@ public class loginUtil {
 
     public String getAPIVersion() {
     	return logInfo.apiVersion;
+    }
+    public String getOutputDirectory() {
+    	String outDir=(logInfo.directory=="")?"":logInfo.directory+"/";
+    	return outDir;
     }
     public MetadataConnection getMetadataConnection(String configFile) 
     		throws Exception, JsonMappingException, IOException 
