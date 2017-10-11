@@ -1,10 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>salesforceMetadata</artifactId>
-  <version>0.1.2</version>
+  <version>0.2.0</version>
   <build>
     <defaultGoal>install</defaultGoal>
-    <sourceDirectory>src/java</sourceDirectory>
+     <!-- sourceDirectory>src/java</sourceDirectory-->
+    <sourceDirectory>src</sourceDirectory>
  
     <resources>
         <resource>
@@ -147,8 +148,8 @@
  <name>Metadata tools for salesforce</name>
  <url>https://github.com/jmcaudron/salesforce-metadata-packagetools</url>
  <properties>
-    <force-metadata-api.version>39.0.0</force-metadata-api.version>
-    <force.partner.api.version>39.0.0</force.partner.api.version>
+    <force-metadata-api.version>41.0.0</force-metadata-api.version>
+    <force.partner.api.version>41.0.0</force.partner.api.version>
   </properties>
  <groupId>com.jmc.force</groupId>
 </project>

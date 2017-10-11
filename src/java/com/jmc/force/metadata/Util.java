@@ -8,15 +8,21 @@ import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.sforce.soap.metadata.FileProperties;
 import com.sforce.soap.metadata.ListMetadataQuery;
 import com.sforce.soap.metadata.MetadataConnection;
 import com.sforce.soap.metadata.PackageTypeMembers;
 import com.sforce.ws.ConnectionException;
 
-public class Util {             
-	static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");	 
-	 public static PackageTypeMembers getPackageTypeMembers (MetadataConnection metadataConnection,ListMetadataQuery query, Calendar refDate, String dateType ,double versionApi ) {
+public class Util {     
+	private static Logger logger = Logger.getLogger(Util.class);
+	
+	static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");		
+	static SimpleDateFormat sdtf = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");	
+	
+	 public static PackageTypeMembers getPackageTypeMembers (MetadataConnection metadataConnection,ListMetadataQuery query, Calendar refDate, String dateType ,double versionApi, boolean managed, boolean withDate ) {
     	PackageTypeMembers packTypeMembers = new PackageTypeMembers() ;
 		packTypeMembers.setName(query.getType());
 		Calendar memberDate;
@@ -40,9 +46,16 @@ public class Util {
 		    			memberDate =  new GregorianCalendar(2050,1,28,13,24,56);;
 		    			break;		
 		    		}
+		    		logger.debug("FileProperties="+n.toString());
 		    		
-		    		if (memberDate.after(refDate) && n.getManageableState() == com.sforce.soap.metadata.ManageableState.unmanaged) {
-		    			members.add(n.getFullName());
+		    		if (memberDate.after(refDate) && ( managed || n.getManageableState() == com.sforce.soap.metadata.ManageableState.unmanaged  ||  n.getManageableState() == null ) ) {
+		    			String member;
+		    			member = n.getFullName();
+		    			if (withDate) {
+		    				member += "|" +sdtf.format(n.getLastModifiedDate().getTime()); 
+		    				//member= "<name>"+member+"</member>"+"<date>"+sdtf.format(n.getLastModifiedDate().getTime())+"</date>";
+		    			}
+		    			members.add(member);
 		    		}
 		    	}
 		    	//+" "+ sdf.format(memberDate.getTime()
