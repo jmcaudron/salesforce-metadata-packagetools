@@ -52,7 +52,7 @@ public class Util {
 		    			String member;
 		    			member = n.getFullName();
 		    			if (withDate) {
-		    				member += "|" +sdtf.format(n.getLastModifiedDate().getTime()); 
+		    				member += "|" +sdtf.format(n.getLastModifiedDate().getTime()) + "|" +n.getLastModifiedByName(); 
 		    				//member= "<name>"+member+"</member>"+"<date>"+sdtf.format(n.getLastModifiedDate().getTime())+"</date>";
 		    			}
 		    			members.add(member);

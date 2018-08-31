@@ -146,19 +146,26 @@ public class BuildPackage {
     	metadatadescribexout.close();
     	metadatadescribefos.close();
     	
-    	//With Manaaged
+    	//With Managed
     	writeMetadata(outputDirectory+"/package/packageNewWithManaged.xml",packageType.New,true,false);
     	writeMetadata(outputDirectory+"/package/packageAllWithManaged.xml",packageType.All,true,false);  
     	writeMetadata(outputDirectory+"/package/packageUpdatedWithManaged.xml",packageType.Updated, true, false); 
 
     	//With Managed + Date
-    	writeMetadata(outputDirectory+"/package/packageAllWithManagedAndDate.xml",packageType.All,true,true);  
+    	writeMetadata(outputDirectory+"/package/packageAllWithManagedAndDetail.xml",packageType.All,true,true);
+    	writeMetadata(outputDirectory+"/package/packageUpdatedWithManagedAndDetail.xml",packageType.Updated, true, true);
     	
-    	//Without Managed & Date
+    	//Without Managed & no Detail
     	writeMetadata(outputDirectory+"/package/packageUpdated.xml",packageType.Updated, false,false);
     	writeMetadata(outputDirectory+"/package/packageNew.xml",packageType.New,false,false);  
     	writeMetadata(outputDirectory+"/package/packageAll.xml",packageType.All,false,false);   
-         
+
+    	//Without Managed &  Detail
+    	writeMetadata(outputDirectory+"/package/packageUpdated.xml",packageType.Updated, false,true);
+    	writeMetadata(outputDirectory+"/package/packageNew.xml",packageType.New,false,true);  
+    	writeMetadata(outputDirectory+"/package/packageAll.xml",packageType.All,false,true);
+    	
+    	
         logger.info("End");
     }
     
@@ -189,11 +196,11 @@ public class BuildPackage {
     	
     }*/
     
-    private List<String> getMembers(String soqlQuery, String folderField, String nameField,boolean withDate, String  dateField){
-    	return getMembers( soqlQuery,  folderField,  nameField,"",withDate,dateField);
+    private List<String> getMembers(String soqlQuery, String folderField, String nameField,boolean withDetail, String  dateField, String LastModifiedByEntity, String LastModifiedByField){
+    	return getMembers( soqlQuery,  folderField,  nameField,"",withDetail,dateField,LastModifiedByEntity,LastModifiedByField);
     }
     
-    private List<String> getMembers(String soqlQuery, String folderField, String nameField, String folderObject, boolean withDate, String dateField){
+    private List<String> getMembers(String soqlQuery, String folderField, String nameField, String folderObject, boolean withDetail, String dateField, String LastModifiedByEntity, String LastModifiedByField){
     	List<String> members = new ArrayList<String>();
 		JSONObject json;
 		JSONArray records;
@@ -202,6 +209,7 @@ public class BuildPackage {
 
     	json = new JSONObject (restUtil.restQuery(sessionId, uri, soqlQuery));
 		records =json.getJSONArray("records");
+		logger.debug("records="+records);
 		
 		for ( Object record : records) {
 			JSONObject jrecord = (JSONObject) record;
@@ -215,8 +223,8 @@ public class BuildPackage {
 			name = (nameField != "")?"/"+jrecord.getString(nameField):"";
 			member = folder + name;
 
-			if (withDate && dateField != "") {
-				member+= "|"+jrecord.getString(dateField);
+			if (withDetail && dateField != "") {
+				member+= "|"+jrecord.getString(dateField)+"|"+((JSONObject)jrecord.get("LastModifiedBy")).getString("Name");
 			}
 			members.add(member);				
 		}
@@ -237,7 +245,7 @@ public class BuildPackage {
         }
         return argMap;
     }
-    private void  writeMetadata (String packageFileName, packageType type, boolean managed, boolean withDate) throws IOException  {
+    private void  writeMetadata (String packageFileName, packageType type, boolean managed, boolean withDetail) throws IOException  {
     	logger.info("writeMetadata("+packageFileName+","+type+"): Start");
     	
     	List<PackageTypeMembers> PackageType = new ArrayList<PackageTypeMembers>();
@@ -271,9 +279,10 @@ public class BuildPackage {
     				//get Folder
     				packTypeMembers = new PackageTypeMembers() ;
     	    		packTypeMembers.setName(query.getType());
-    				members = getMembers("SELECT DeveloperName,Type,LastModifiedDate FROM Folder WHERE Type = 'Report' AND DeveloperName != null " + queryClause, "DeveloperName","", withDate,"LastModifiedDate");
+    				members = getMembers("SELECT DeveloperName,Type,LastModifiedDate,LastModifiedBy.Name FROM Folder WHERE Type = 'Report' AND DeveloperName != null " + queryClause, "DeveloperName","", withDetail,"LastModifiedDate","LastModifiedBy","Name");
     	    		//members = getMembers("SELECT DeveloperName,Type FROM Folder WHERE Type = 'Report' AND DeveloperName != null  ", "DeveloperName","");
-    				logger.debug("members folder=" +members);
+    				logger.info("members folder=" +members);
+
     				if (members.size() > 0) {
 	    				packTypeMembers.setMembers( members.toArray(new String[members.size()]));
 	    				PackageType.add(packTypeMembers);
@@ -282,7 +291,7 @@ public class BuildPackage {
     				//getReport
     				packTypeMembers = new PackageTypeMembers() ;
     	    		packTypeMembers.setName(query.getType());
-    				members = getMembers("SELECT DeveloperName,FolderName,LastModifiedDate FROM Report where FolderName!= null"  + queryClause,"FolderName", "DeveloperName",withDate,"LastModifiedDate");
+    				members = getMembers("SELECT DeveloperName,FolderName,LastModifiedDate,LastModifiedBy.Name FROM Report where FolderName!= null"  + queryClause,"FolderName", "DeveloperName",withDetail,"LastModifiedDate","LastModifiedBy","Name");
     				logger.debug("members folder=" +members);
     				if (members.size() > 0) {
 	    				packTypeMembers.setMembers( members.toArray(new String[members.size()]));
@@ -295,7 +304,7 @@ public class BuildPackage {
     				//get Folder
     				packTypeMembers = new PackageTypeMembers() ;
     	    		packTypeMembers.setName(query.getType());
-    				members = getMembers("SELECT DeveloperName,Type,LastModifiedDate FROM Folder WHERE Type = 'Email' AND DeveloperName != null "+ queryClause, "DeveloperName","",withDate,"LastModifiedDate");
+    				members = getMembers("SELECT DeveloperName,Type,LastModifiedDate,LastModifiedBy.Name FROM Folder WHERE Type = 'Email' AND DeveloperName != null "+ queryClause, "DeveloperName","",withDetail,"LastModifiedDate","LastModifiedBy","Name");
     				logger.debug("members folder Email=" +members);
     				if (members.size() > 0) {
 	    				packTypeMembers.setMembers( members.toArray(new String[members.size()]));
@@ -305,7 +314,7 @@ public class BuildPackage {
     				//get EmailTemplate
     				packTypeMembers = new PackageTypeMembers() ;
     	    		packTypeMembers.setName(query.getType());
-    				members = getMembers("SELECT DeveloperName,Folder.developerName, LastModifiedDate FROM EmailTemplate where Folder.developerName!= null"+ queryClause,"DeveloperName", "DeveloperName","Folder",withDate, "LastModifiedDate");
+    				members = getMembers("SELECT DeveloperName,Folder.developerName, LastModifiedDate,LastModifiedBy.Name FROM EmailTemplate where Folder.developerName!= null"+ queryClause,"DeveloperName", "DeveloperName","Folder",withDetail, "LastModifiedDate","LastModifiedBy","Name");
     				logger.debug("members  EmailTemplate=" +members);
     				if (members.size() > 0) {
 	    				packTypeMembers.setMembers( members.toArray(new String[members.size()]));
@@ -318,7 +327,7 @@ public class BuildPackage {
     				//get Folder
     				packTypeMembers = new PackageTypeMembers() ;
     	    		packTypeMembers.setName(query.getType());
-    				members = getMembers("SELECT DeveloperName,Type, LastModifiedDate FROM Folder WHERE Type = 'Dashboard' AND DeveloperName != null "+ queryClause, "DeveloperName","",withDate,"LastModifiedDate");
+    				members = getMembers("SELECT DeveloperName,Type, LastModifiedDate,LastModifiedBy.Name FROM Folder WHERE Type = 'Dashboard' AND DeveloperName != null "+ queryClause, "DeveloperName","",withDetail,"LastModifiedDate","LastModifiedBy","Name");
     				logger.debug("members folder Email=" +members);
     				if (members.size() > 0) {
 	    				packTypeMembers.setMembers( members.toArray(new String[members.size()]));
@@ -328,7 +337,7 @@ public class BuildPackage {
     				//get EmailTemplate
     				packTypeMembers = new PackageTypeMembers() ;
     	    		packTypeMembers.setName(query.getType());
-    				members = getMembers("SELECT DeveloperName,Folder.developerName,LastModifiedDate FROM Dashboard where Folder.developerName!= null "+ queryClause,"DeveloperName", "DeveloperName","Folder",withDate,"LastModifiedDate");
+    				members = getMembers("SELECT DeveloperName,Folder.developerName,LastModifiedDate,LastModifiedBy.Name FROM Dashboard where Folder.developerName!= null "+ queryClause,"DeveloperName", "DeveloperName","Folder",withDetail,"LastModifiedDate","LastModifiedBy","Name");
     				logger.debug("members  EmailTemplate=" +members);
     				if (members.size() > 0) {
 	    				packTypeMembers.setMembers( members.toArray(new String[members.size()]));
@@ -337,7 +346,7 @@ public class BuildPackage {
     				break;
     			default:
     				packTypeMembers = new PackageTypeMembers() ;
-    				packTypeMembers=Util.getPackageTypeMembers(metadataConnection,query,metaInfo.fromDate,type.toString(), metaInfo.version, managed, withDate);
+    				packTypeMembers=Util.getPackageTypeMembers(metadataConnection,query,metaInfo.fromDate,type.toString(), metaInfo.version, managed, withDetail);
     				logger.debug("size=" +packTypeMembers.getMembers().length);
     				if (packTypeMembers.getMembers().length >0) {
     					PackageType.add(packTypeMembers);
