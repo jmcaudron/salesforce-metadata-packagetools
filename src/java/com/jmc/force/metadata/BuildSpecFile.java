@@ -224,11 +224,12 @@ public class BuildSpecFile {
 		    		rowField.put("keyPrefix",sObject.get("keyPrefix"));
 		    		 
 		    		//picklistValues,referenceTo
+		    		logger.debug("row type :"+ rowField.get("type"));
 		    		if (rowField.get("type").toString().equals("picklist")) {
 						//logger.info("picklist='"+record.getJSONObject("Metadata").getJSONObject("picklist").toString(2));
 						//rowsPicklist= addPicklist( records.getJSONObject(index));	
-		    			logger.debug("picklist='"+rowField.get("picklistValues"));
-		    			rowsPicklist= getRows(picklist);
+		    			logger.debug("picklist='"+picklist);
+		    			rowsPicklist.addAll(getRows(picklist));
 		    			//"ObjectApiName","ObjectLabel","fieldName","fieldlabel",
 		    			for (Row row : rowsPicklist) {
 		    				row.put("ObjectApiName",rowField.get("ObjectApiName"));
