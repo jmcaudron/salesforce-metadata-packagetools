@@ -120,7 +120,8 @@ public class BuildSpecFile {
      	List<String> headerMap =Arrays.asList("#SourceFieldDataLoader","TargetFieldDataLoader");
      	CSVFileWriter fileMap;
   
-     	List<Row> rowsPicklist;
+     	List<Row> rowsPicklistField;
+     	List<Row> rowsPicklistObject;
      	//Row rowPicklist =new Row();
      	List<String> headerPicklist =  Arrays.asList("ObjectApiName","ObjectLabel","fieldName","fieldlabel","value","label","defaultValue","active","validFor") ;
      	CSVFileWriter filePicklists;
@@ -199,7 +200,8 @@ public class BuildSpecFile {
 				rowsMap= new ArrayList<Row>();
 				rowsSpec= new ArrayList<Row>();
 		     	rowsExternalId= new ArrayList<Row>();
-		     	rowsPicklist= new ArrayList<Row>();
+		     	rowsPicklistField= new ArrayList<Row>();
+		     	rowsPicklistObject= new ArrayList<Row>();
 		     	
 		     	soqlObjectQuery="select id";
 		     	
@@ -229,14 +231,15 @@ public class BuildSpecFile {
 						//logger.info("picklist='"+record.getJSONObject("Metadata").getJSONObject("picklist").toString(2));
 						//rowsPicklist= addPicklist( records.getJSONObject(index));	
 		    			logger.debug("picklist='"+picklist);
-		    			rowsPicklist.addAll(getRows(picklist));
+		    			rowsPicklistField=getRows(picklist);
 		    			//"ObjectApiName","ObjectLabel","fieldName","fieldlabel",
-		    			for (Row row : rowsPicklist) {
+		    			for (Row row : rowsPicklistField) {
 		    				row.put("ObjectApiName",rowField.get("ObjectApiName"));
 		    				row.put("ObjectLabel",rowField.get("ObjectLabel"));
 		    				row.put("fieldName",rowField.get("name"));
 		    				row.put("fieldlabel",rowField.get("label"));	
 		    			}
+		    			rowsPicklistObject.addAll(rowsPicklistField);
 		    			
 					} 
 					
@@ -298,7 +301,7 @@ public class BuildSpecFile {
 				//logger.error("rowsField<"+sObject.get("name")+">=" +rowsField.toString());
 				fileDictionary.writeRowList(rowsField); 
 				fileExternalId.writeRowList(rowsExternalId);
-				filePicklists.writeRowList(rowsPicklist);
+				filePicklists.writeRowList(rowsPicklistObject);
 				//logger.error("picklist<"+object+">=" +rowsPicklist.toString());
 				
 				fileFields =new CSVFileWriter(outputDirectory+"desc/"+sObject.get("name")+".csv" );
