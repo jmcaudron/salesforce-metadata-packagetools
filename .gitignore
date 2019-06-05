@@ -19,3 +19,4 @@ package*.xml
 *.log
 
 *old.*
+.vscode/settings.json
